@@ -1,232 +1,21 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include"depend.h"
-//#include<iostream>
-//#include<string>
-//#include<vector>
-//#include<queue>
-//#include<cstdlib>
-//#include<Windows.h>
-//#include<algorithm>
-//#include<sstream>
-//using namespace std;
-//
-//
-//#define READY 1//å°±ç»ª
-//#define RUN 2//è¿è¡Œ
-//#define STOP 3//é˜»å¡
-//class PCB;
-//PCB* run = NULL;
-////bool isRun = false;
-//class SHOW{
-//private:
-//	short x,y;
-//	string dialog;
-//public:
-//	SHOW(short x,short y,const string dialog){
-//		this->x=x;
-//		this->y=y;
-//		this->dialog=dialog;
-//	}
-//	//æ‰“å°dialog
-//	void gotoxy(){
-//		HANDLE handle=GetStdHandle(STD_OUTPUT_HANDLE);
-//		COORD p;
-//		p.X=this->x;
-//		p.Y=this->y;
-//		SetConsoleCursorPosition(handle,p);
-//		cout<<dialog;
-//	}
-//	static void gotoxy(short x, short y,string infor) {
-//		HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-//		COORD p;
-//		p.X = x;
-//		p.Y = y;
-//		SetConsoleCursorPosition(handle, p);
-//		cout << infor;
-//	}
-//};
-//
-//class PCB{
-//private:
-//	string processName;
-//	int priority;		//ä¼˜å…ˆçº§
-//	int runTime;		//è¿è¡Œæ—¶é—´
-//	int state;			//çŠ¶æ€
-//	PCB* next;			//æŒ‡å‘ä¸‹ä¸€ä¸ªPCB
-//public:
-//	//æ„é€ å‡½æ•°	nextä¸€èˆ¬åˆå§‹ä¸ºNULL
-//	PCB(string processName,int priority,int runTime,int state,PCB* next){
-//		//runTimeå•ä½ä¸ºs
-//		this->processName=processName;
-//		this->priority=priority;
-//		this->runTime = runTime;
-//		this->state=state;
-//		this->next=next;
-//	}
-//	~PCB() {
-//		SHOW::gotoxy(25, 10, "è¿›ç¨‹å·²ç»é‡Šæ”¾.");
-//	}
-//	void setState(int state) {
-//		this->state = state;
-//	}
-//	//æ–°å»ºçš„PCBæ”¾å…¥å°±ç»ªé˜Ÿåˆ—
-//	bool putReady(vector<PCB*>& ready, vector<PCB*>& stop) {//falseä¸ºé˜Ÿåˆ—å·²æ»¡
-//		this->state = READY;
-//		if (ready.size() == 0) ready.push_back(this);
-//		else if (ready.size() == 10||lookForward(ready)||lookForward(stop)) return false;
-//		else {
-//			ready.back()->next = this;
-//			ready.push_back(this);
-//		}
-//		return true;
-//	}
-//	bool stopToReady(vector<PCB*>& stop,vector<PCB*>& ready) {
-//		if (stop.empty()) return false;
-//		int i;
-//		this->state = READY;
-//		vector<PCB*>::iterator it = stop.begin();
-//		for (i = 0; it != stop.end(); it++, i++) {
-//			if (stop[i]->processName == this->processName) {
-//				if (i - 1 >= 0 && i + 1 < stop.size())
-//					stop[i - 1]->next = stop[i]->next;
-//				else if (i - 1 < 0 && i + 1 < stop.size())
-//					this->next = NULL;
-//				else if (i - 1 >= 0 && i + 1 >= stop.size())
-//					stop[i - 1]->next = NULL;
-//				if (!ready.empty()) ready.back()->next = this;
-//				ready.push_back(this);
-//				stop.erase(it);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-//	int putStop(vector<PCB*>& ready,vector<PCB*>& stop,int former) {//æ”¾å…¥é˜»å¡é˜Ÿåˆ— 0 é˜Ÿåˆ—å·²æ»¡
-//		this->state = STOP;
-//		if (stop.size() == 10) return 0;
-//		if (former == READY) {
-//			int i = 0;
-//			for (vector<PCB*>::iterator it = ready.begin(); it != ready.end(); it++,i++) {
-//				if (ready[i]->processName == this->processName) {
-//					if (i - 1 >= 0 && i + 1 < ready.size())
-//						ready[i - 1]->next = ready[i]->next;
-//					else if (i - 1 < 0 && i + 1 < ready.size())
-//						this->next = NULL;
-//					else if (i - 1 >= 0 && i + 1 >= ready.size())
-//						ready[i - 1]->next = NULL;
-//					if (!stop.empty()) stop.back()->next = this;
-//					stop.push_back(this);
-//					ready.erase(it);
-//					break;
-//				}
-//			}
-//		}
-//		if (former == RUN) {
-//			if (!ready.empty())
-//				stop.back()->next = run;
-//			stop.push_back(run);
-//			run = NULL;
-//		}
-//		if (former == STOP) {
-//			if (!stop.empty())
-//				stop.back()->next = this;
-//			stop.push_back(this);
-//		}
-//		return STOP;
-//	}
-//	bool deletePCB(vector<PCB*>& s) {//ä»å‘é‡sä¸­åˆ é™¤PCB
-//		if (s.empty()) return false;
-//		int i;
-//		vector<PCB*>::iterator it = s.begin();
-//		for (i = 0; it != s.end(); it++, i++) {
-//			if (s[i]->processName == this->processName) {
-//				if (i - 1 >= 0 && i + 1 < s.size())
-//					s[i - 1]->next = s[i]->next;
-//				else if (i - 1 < 0 && i + 1 < s.size())
-//					this->next = NULL;
-//				else if (i - 1 >= 0 && i + 1 >= s.size())
-//					s[i - 1]->next = NULL;
-//				s.erase(it);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-//	/*static bool deletePCB(vector<PCB*>& ready, vector<PCB*>& stop, int state) {
-//		vector<PCB*>& s = ;
-//	}*/
-//	bool putRun(vector<PCB*>& s) {//å°†å·²æœ‰çš„è¿›ç¨‹æ”¾å…¥è¿è¡ŒçŠ¶æ€
-//		if (s.empty()) return false;
-//		int i;
-//		vector<PCB*>::iterator it = s.begin();
-//		for (i = 0; it != s.end(); it++, i++) {
-//			if (s[i]->processName == this->processName) {
-//				if (i - 1 >= 0 && i + 1 < s.size())
-//					s[i - 1]->next = s[i]->next;
-//				else if (i - 1 < 0 && i + 1 < s.size())
-//					this->next = NULL;
-//				else if (i - 1 >= 0 && i + 1 >= s.size())
-//					s[i - 1]->next = NULL;
-//				run = s[i];
-//				s.erase(it);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-//	bool lookForward(vector<PCB*>& s) {
-//		if (s.empty()) return false;
-//		PCB* temp = s.front();
-//		while (temp != NULL) {
-//			if (temp->processName == this->processName)
-//				return true;
-//			temp = temp->next;
-//		}
-//		return false;
-//	}
-//	static int lookForward(vector<PCB*>& s,string processName) {//0 ä¸å­˜åœ¨
-//		//è¿”å›å¤„äºçš„çŠ¶æ€
-//		//if (run->processName == processName) return RUN;
-//		if (s.empty()) return 0;
-//		PCB* temp = s.front();
-//		while (temp != NULL) {
-//			if (temp->processName == processName)
-//				return temp->state;
-//			temp = temp->next;
-//		}
-//		return 0;
-//	}
-//	string getName() {
-//		return this->processName;
-//	}
-//	int getState() {
-//		return this->state;
-//	}
-//	string toString() {
-//		string ans = processName+'\t'+'\t', s;
-//		stringstream ss1,ss2,ss3;
-//		ss1 << priority;
-//		ss1 >> s;
-//		ans += s + '\t';
-//		ss2 << runTime;
-//		ss2 >> s;
-//		ans += s + '\t'+'\t';
-//		ss3 << state;
-//		ss3 >> s;
-//		ans += s;
-//		return ans;
-//	}
-//	PCB* getNext() {
-//		return this->next;
-//	}
-//	void setNext(PCB* s) {
-//		this->next = s;
-//	}
-//};
 
-void deletePCB(vector<PCB*>& s,string processName) {
-	int i = 0;
+vector<PCB*> ready;
+vector<PCB*> stop;
+int length;//Ã¿»Ø´¦ÀíµÄÊ±¼äÆ¬³¤¶È
+int manageState = 1;//½ø³Ìµ÷¶È×´Ì¬
+
+void connectReady() {//Á¬½ÓreadyÄÚµÄnext
+	unsigned int i;
+	for (i = 0; i < ready.size() - 1; i++)
+		ready[i]->setNext(ready[i + 1]);
+	ready[i]->setNext(NULL);
+}
+
+void deletePCB(vector<PCB*>& s, string processName) {
+	unsigned int i = 0;
 	for (vector<PCB*>::iterator it = s.begin(); it != s.end(); it++, i++) {
 		if (s[i]->getName() == processName) {
 			if (i - 1 >= 0 && i + 1 < s.size())
@@ -242,34 +31,74 @@ void deletePCB(vector<PCB*>& s,string processName) {
 	}
 }
 
-
-string menu(){
-	vector<string> word(6);
-	word[0]="1â€¦â€¦â€¦åˆ›å»º";
-	word[1]="2â€¦â€¦â€¦é˜»å¡";
-	word[2]="3â€¦â€¦â€¦å”¤é†’";
-	word[3]="4â€¦â€¦â€¦ç»ˆæ­¢";
-	word[4]="5â€¦â€¦â€¦æ˜¾ç¤º";
-	word[5]="0â€¦â€¦â€¦é€€å‡º";
-	SHOW::gotoxy(31,3,"ç³»ç»Ÿä¸»èœå•");
-	short x=30,y=5;
-	for(int i=0;i<word.size();i++,y+=2){
-		SHOW::gotoxy(x,y,word[i]);
-	}
-	SHOW::gotoxy(25,y,"è¯·è¾“å…¥æ‚¨éœ€è¦çš„åŠŸèƒ½(0--5)");
-	SHOW::gotoxy(30,y+2,"è¾“å…¥é€‰æ‹© = ");
-	string ans;
-	cin>>ans;
-	return ans;
-}
-
 void fresh(short x, short y, int len) {
-	SHOW::gotoxy(x,y,"");
+	SHOW::gotoxy(x, y, "");
 	for (int i = 0; i < len; i++)
 		cout << " ";
 }
 
-void pageUp(int& count,short& x,short& y) {
+string menu() {
+	vector<string> word(8);
+	word[0] = "1¡­¡­¡­´´½¨";
+	word[1] = "2¡­¡­¡­×èÈû";
+	word[2] = "3¡­¡­¡­»½ĞÑ";
+	word[3] = "4¡­¡­¡­ÖÕÖ¹";
+	word[4] = "5¡­¡­¡­ÏÔÊ¾";
+	word[5] = "6¡­¡­¡­µ÷¶È";
+	word[6] = "7¡­¡­¡­¶¯Ì¬·ÖÇø";
+	word[7] = "0¡­¡­¡­ÍË³ö";
+	SHOW::gotoxy(31, 3, "ÏµÍ³Ö÷²Ëµ¥");
+	short x = 30, y = 5;
+	for (unsigned int i = 0; i < word.size(); i++, y += 2) {
+		SHOW::gotoxy(x, y, word[i]);
+	}
+	SHOW::gotoxy(25, y, "ÇëÊäÈëÄúĞèÒªµÄ¹¦ÄÜ(0--7)");
+	SHOW::gotoxy(30, y + 2, "ÊäÈëÑ¡Ôñ = ");
+	string ans;
+	cin >> ans;
+	return ans;
+}
+
+string menuManage(short x, short y) {
+	string input;
+	SHOW::gotoxy(x, y, "0¡­¡­¡­¡­·µ»ØÖ÷²Ëµ¥");
+	y += 2;
+	SHOW::gotoxy(x, y, "1¡­¡­¡­¡­ÓÅÏÈ¼¶µ÷¶È");
+	y += 2;
+	SHOW::gotoxy(x, y, "2¡­¡­¡­¡­Ê±¼äÆ¬µ÷¶È");
+	y += 2;
+	SHOW::gotoxy(x - 2, y, "ÇëÑ¡ÔñÄúĞèÒªµÄ¹¦ÄÜÑ¡Ïî£º");
+	cin >> input;
+	return input;
+}
+
+string menuDp(short x, short y) {
+	string ans;
+	SHOW::gotoxy(x, y, "0¡­¡­¡­ÍË³ö");
+	y += 2;
+	SHOW::gotoxy(x, y, "1¡­¡­¡­·ÖÅä");
+	y += 2;
+	SHOW::gotoxy(x, y, "2¡­¡­¡­»ØÊÕ");
+	y += 2;
+	SHOW::gotoxy(x, y, "3¡­¡­¡­ÏÔÊ¾");
+	y += 2;
+	SHOW::gotoxy(x - 4, y, "ÇëÑ¡ÔñÄúĞèÒªµÄ¹¦ÄÜ£º");
+	cin >> ans;
+	return ans;
+}
+
+void processShow(string title,short& x, short& y, void (*p)(short& x,short& y,string title)) {//´ò±í
+	SHOW::gotoxy(x, y++, title);
+	SHOW::gotoxy(x, y++, "-------------------------------------------------------");
+	SHOW::gotoxy(x, y++, "ĞòºÅ\t½ø³ÌÃû³Æ\tÓÅÏÈ¼¶\tÔËĞĞÊ±¼ä\tÔËĞĞ×´Ì¬");
+	SHOW::gotoxy(x, y++, "-------------------------------------------------------");
+	p(x,y,title);
+	SHOW::gotoxy(x, y++, "-------------------------------------------------------");
+	SHOW::gotoxy(x, y, "");
+	system("pause");
+}
+
+void pageUp(int& count, short& x, short& y,string title) {
 	if (count == 10) {
 		count %= 10;
 		y++;
@@ -278,27 +107,25 @@ void pageUp(int& count,short& x,short& y) {
 		system("pause");
 		x = 25, y = 4;
 		fresh(0, 0, 3000);
-		SHOW::gotoxy(x, y++, "æ‰€æœ‰è¿›ç¨‹");
+		SHOW::gotoxy(x, y++, title);
 		SHOW::gotoxy(x, y++, "-------------------------------------------------------");
-		SHOW::gotoxy(x, y++, "åºå·\tè¿›ç¨‹åç§°\tä¼˜å…ˆçº§\tè¿è¡Œæ—¶é—´\tè¿è¡ŒçŠ¶æ€");
-		SHOW::gotoxy(x, y, "-------------------------------------------------------");
+		SHOW::gotoxy(x, y++, "ĞòºÅ\t½ø³ÌÃû³Æ\tÓÅÏÈ¼¶\tÔËĞĞÊ±¼ä\tÔËĞĞ×´Ì¬");
+		SHOW::gotoxy(x, y++, "-------------------------------------------------------");
 	}
 }
 
-int main(){
-	vector<PCB*> ready;
-	vector<PCB*> stop;
-	string input=menu();
-	SHOW error(30, 21, "è¾“å…¥é”™è¯¯ï¼Œè¯·é‡æ–°è¾“å…¥..");
-	while(1){
-		if(input=="0")
+int main() {
+	string input = menu();
+	SHOW error(30, 21, "ÊäÈë´íÎó£¬ÇëÖØĞÂÊäÈë..");
+	while (1) {
+		if (input == "0")
 			return 0;
-		else if (input == "1") {//åˆ›å»º
-			fresh(0,0,3000);
+		else if (input == "1") {//´´½¨
+			fresh(0, 0, 3000);
 			short x = 25, y = 8;
 			int prior, rt, state;
 			string processName;
-			SHOW in(x, y, "è¯·è¾“å…¥è¦åˆ›å»ºçš„è¿›ç¨‹åï¼š"), priority(x, y + 2, "è¯·è¾“å…¥ä¼˜å…ˆçº§ï¼š"),runTime(x,y+4,"è¯·è¾“å…¥è¿è¡Œæ—¶é—´ï¼š");
+			SHOW in(x, y, "ÇëÊäÈëÒª´´½¨µÄ½ø³ÌÃû£º"), priority(x, y + 2, "ÇëÊäÈëÓÅÏÈ¼¶£º"), runTime(x, y + 4, "ÇëÊäÈëÔËĞĞÊ±¼ä£º");
 			in.gotoxy();
 			cin >> processName;
 			priority.gotoxy();
@@ -306,49 +133,67 @@ int main(){
 			runTime.gotoxy();
 			cin >> rt;
 			y += 6;
-			SHOW::gotoxy(x, y, "1-å°±ç»ª\t2-æ‰§è¡Œ\t3-é˜»å¡");
+			SHOW::gotoxy(x, y, "1-¾ÍĞ÷\t2-Ö´ĞĞ\t3-×èÈû");
 			y += 2;
-			SHOW::gotoxy(x, y, "è¯·è¾“å…¥è¿è¡ŒçŠ¶æ€ï¼š");
+			SHOW::gotoxy(x, y, "ÇëÊäÈëÔËĞĞ×´Ì¬£º");
 			y += 2;
 			cin >> state;
 			if (state <= 0 || state > 3) {
-				SHOW::gotoxy(x, y, "æ²¡æœ‰è¯¥çŠ¶æ€");
+				SHOW::gotoxy(x, y, "Ã»ÓĞ¸Ã×´Ì¬");
 				goto end;
 			}
-			if (state == RUN && run) SHOW::gotoxy(x, y, "å·²ç»æœ‰ç¨‹åºå¤„äºè¿è¡ŒçŠ¶æ€,è¯·é‡è¯•ã€‚");
-			else if (state == RUN && run == NULL&&!PCB::lookForward(ready,processName)&&!PCB::lookForward(stop,processName)) { 
+			if (state == RUN && run) SHOW::gotoxy(x, y, "ÒÑ¾­ÓĞ³ÌĞò´¦ÓÚÔËĞĞ×´Ì¬,ÇëÖØÊÔ¡£");
+			else if (state == RUN && run == NULL && !PCB::lookForward(ready, processName) && !PCB::lookForward(stop, processName)) {
 				run = new PCB(processName, prior, rt, RUN, NULL);
-				SHOW::gotoxy(x, y, "è¿›ç¨‹åˆ›å»ºæˆåŠŸ!!!");
+				SHOW::gotoxy(x, y, "½ø³Ì´´½¨³É¹¦!!!");
 				run->setState(RUN);
 			}
 			else {
-				PCB* create=new PCB(processName, prior, rt, state, NULL);
-				if ((run && (run->getName() == processName))||(state==RUN&&run!=NULL))
-					SHOW::gotoxy(x, y, "å·²æœ‰åŒåè¿›ç¨‹æ­£åœ¨æ‰§è¡Œï¼ï¼ï¼");
-				else if ((state == READY&&create->putReady(ready, stop))||(state==STOP&&create->putStop(ready,stop,STOP)))
-					SHOW::gotoxy(x, y, "è¿›ç¨‹åˆ›å»ºæˆåŠŸ!!!");
-				else SHOW::gotoxy(x, y, "é˜Ÿåˆ—ä¸­å·²æœ‰åŒåè¿›ç¨‹ï¼ï¼ï¼");
+				PCB* create = new PCB(processName, prior, rt, state, NULL);
+				if ((run && (run->getName() == processName)) || (state == RUN && run != NULL))
+					SHOW::gotoxy(x, y, "ÒÑÓĞÍ¬Ãû½ø³ÌÕıÔÚÖ´ĞĞ£¡£¡£¡");
+				else if (state == READY && !run) {
+					char ch;
+					SHOW::gotoxy(x, y, "µ±Ç°Ã»ÓĞ½ø³Ì´¦ÓÚÖ´ĞĞ×´Ì¬£¬¸Ã×´Ì¬ÊÇ·ñ×ªÎªÖ´ĞĞ×´Ì¬(Y/N)£º");
+					y += 2;
+					cin >> ch;
+					if (ch == 'Y' || ch == 'y') {
+						run = create;
+						run->setState(RUN);
+						SHOW::gotoxy(x, y, "ÒÑ½«µ±Ç°³ÌĞò×ªÎªÖ´ĞĞ×´Ì¬¡£");
+					}
+					else if (ch == 'N' || ch == 'n') {
+						create->putReady(ready, stop);
+						SHOW::gotoxy(x, y, "µ±Ç°³ÌĞòÒÑ´æ´¢Îª¾ÍĞ÷×´Ì¬¡£");
+					}
+					else SHOW::gotoxy(x, y, "ÊäÈë´íÎó£¬ÇëÖØÊÔ¡£");
+				}
+				else if (state == READY && create->putReady(ready, stop))
+					SHOW::gotoxy(x, y, "¾ÍĞ÷½ø³Ì´´½¨³É¹¦!!!");
+				else if (state == STOP && create->putStop(ready, stop, STOP))
+					SHOW::gotoxy(x, y, "×èÈû½ø³Ì´´½¨³É¹¦!!!");
+				else SHOW::gotoxy(x, y, "¶ÓÁĞÖĞÒÑÓĞÍ¬Ãû½ø³Ì£¡£¡£¡");
 			}
-			end:y += 2;
+		end:y += 2;
 			SHOW::gotoxy(x, y, "");
 			system("pause");
 			goto refreash;
 		}
-		else if (input == "2") {//é˜»å¡
+		else if (input == "2") {//×èÈû
 			short x = 25, y = 8;
 			string processName;
-			fresh(0,0,3000);
-			SHOW::gotoxy(x, y, "è¯·è¾“å…¥è¦é˜»å¡çš„è¿›ç¨‹åç§°ï¼š");
+			fresh(0, 0, 3000);
+			SHOW::gotoxy(x, y, "ÇëÊäÈëÒª×èÈûµÄ½ø³ÌÃû³Æ£º");
 			y += 2;
 			cin >> processName;
 			int readyState = PCB::lookForward(ready, processName), stopState = PCB::lookForward(stop, processName);
 			if (readyState || stopState || (run && run->getName() == processName)) {
 				if (run && run->getName() == processName) {
 					run->putStop(ready, stop, RUN);
-					SHOW::gotoxy(x, y, "å·²å°†è¿è¡Œçš„è¿›ç¨‹æŒªå…¥é˜»å¡é˜Ÿåˆ—");
+					SHOW::gotoxy(x, y, "ÒÑ½«ÔËĞĞµÄ½ø³ÌÅ²Èë×èÈû¶ÓÁĞ");
 					y += 2;
-					if (ready.empty()) SHOW::gotoxy(x, y, "å°±ç»ªé˜Ÿåˆ—å·²ç©ºï¼Œæ²¡æœ‰è¿›ç¨‹æ­£åœ¨æ‰§è¡Œã€‚");
-					else {//å°†å°±ç»ªé˜Ÿåˆ—ç¬¬ä¸€ä¸ªå˜ä¸ºè¿è¡ŒçŠ¶æ€
+					if (ready.empty()) SHOW::gotoxy(x, y, "¾ÍĞ÷¶ÓÁĞÒÑ¿Õ£¬Ã»ÓĞ½ø³ÌÕıÔÚÖ´ĞĞ¡£");
+					else {//½«¾ÍĞ÷¶ÓÁĞµÚÒ»¸ö±äÎªÔËĞĞ×´Ì¬
 						run = ready[0];
 						run->setNext(NULL);
 						run->setState(RUN);
@@ -356,47 +201,47 @@ int main(){
 						ready.erase(it);
 					}
 				}
-				else if (stopState == STOP) SHOW::gotoxy(x, y, "è¯¥è¿›ç¨‹å¤„äºé˜»å¡çŠ¶æ€ã€‚ã€‚");
-				else if (readyState == READY) SHOW::gotoxy(x, y, "è¯¥è¿›ç¨‹å¤„äºå°±ç»ªçŠ¶æ€ã€‚ã€‚");
+				else if (stopState == STOP) SHOW::gotoxy(x, y, "¸Ã½ø³Ì´¦ÓÚ×èÈû×´Ì¬¡£¡£");
+				else if (readyState == READY) SHOW::gotoxy(x, y, "¸Ã½ø³Ì´¦ÓÚ¾ÍĞ÷×´Ì¬¡£¡£");
 			}
-			else SHOW::gotoxy(x, y, "æ²¡æœ‰è¯¥è¿›ç¨‹ã€‚");
+			else SHOW::gotoxy(x, y, "Ã»ÓĞ¸Ã½ø³Ì¡£");
 			y += 2;
 			SHOW::gotoxy(x, y, "");
 			system("pause");
 			goto refreash;
 		}
-		else if (input == "3") {//å”¤é†’
+		else if (input == "3") {//»½ĞÑ
 			short x = 25, y = 8;
-			fresh(0,0,3000);
-			if (stop.empty()) SHOW::gotoxy(x, y, "é˜»å¡é˜Ÿåˆ—ä¸ºç©ºï¼Œä¸èƒ½æ‰§è¡Œæ­¤æ“ä½œ");
-			else if(ready.size()==10) SHOW::gotoxy(x, y, "å°±ç»ªé˜Ÿåˆ—å·²æ»¡ï¼Œä¸èƒ½æ‰§è¡Œæ­¤æ“ä½œ");
+			fresh(0, 0, 3000);
+			if (stop.empty()) SHOW::gotoxy(x, y, "×èÈû¶ÓÁĞÎª¿Õ£¬²»ÄÜÖ´ĞĞ´Ë²Ù×÷");
+			else if (ready.size() == 10) SHOW::gotoxy(x, y, "¾ÍĞ÷¶ÓÁĞÒÑÂú£¬²»ÄÜÖ´ĞĞ´Ë²Ù×÷");
 			else {
 				string processName;
-				SHOW::gotoxy(x, y, "è¯·è¾“å…¥è¦å”¤é†’çš„è¿›ç¨‹åç§°ï¼š");
+				SHOW::gotoxy(x, y, "ÇëÊäÈëÒª»½ĞÑµÄ½ø³ÌÃû³Æ£º");
 				y += 2;
 				cin >> processName;
 				int readyState = PCB::lookForward(ready, processName), stopState = PCB::lookForward(stop, processName);
 				if (readyState || stopState || (run && run->getName() == processName)) {
 					if (run && run->getName() == processName)
-						SHOW::gotoxy(x, y, "è¯¥è¿›ç¨‹å·²ç»å¤„äºè¿è¡ŒçŠ¶æ€");
+						SHOW::gotoxy(x, y, "¸Ã½ø³ÌÒÑ¾­´¦ÓÚÔËĞĞ×´Ì¬");
 					else if (stopState == STOP) {
 						stop.back()->stopToReady(stop, ready);
-						SHOW::gotoxy(x, y, "å·²å°†è¯¥è¿›ç¨‹ç§»å…¥å°±ç»ªçŠ¶æ€ã€‚ã€‚");
+						SHOW::gotoxy(x, y, "ÒÑ½«¸Ã½ø³ÌÒÆÈë¾ÍĞ÷×´Ì¬¡£¡£");
 					}
-					else if (readyState == READY) SHOW::gotoxy(x, y, "è¯¥è¿›ç¨‹å·²å¤„äºå°±ç»ªçŠ¶æ€ã€‚ã€‚");
+					else if (readyState == READY) SHOW::gotoxy(x, y, "¸Ã½ø³ÌÒÑ´¦ÓÚ¾ÍĞ÷×´Ì¬¡£¡£");
 				}
-				else SHOW::gotoxy(x, y, "æ²¡æœ‰è¯¥è¿›ç¨‹ã€‚");
+				else SHOW::gotoxy(x, y, "Ã»ÓĞ¸Ã½ø³Ì¡£");
 			}
 			y += 2;
 			SHOW::gotoxy(x, y, "");
 			system("pause");
 			goto refreash;
 		}
-		else if (input == "4") {//ç»ˆæ­¢
+		else if (input == "4") {//ÖÕÖ¹
 			short x = 25, y = 8;
-			fresh(0,0,3000);
+			fresh(0, 0, 3000);
 			string processName;
-			SHOW::gotoxy(x, y, "è¯·è¾“å…¥è¦ç»“æŸçš„è¿›ç¨‹åç§°ï¼š");
+			SHOW::gotoxy(x, y, "ÇëÊäÈëÒª½áÊøµÄ½ø³ÌÃû³Æ£º");
 			y += 2;
 			cin >> processName;
 			int readyState = PCB::lookForward(ready, processName),
@@ -404,68 +249,159 @@ int main(){
 			if (run && run->getName() == processName) {
 				delete run;
 				run->setNext(NULL);
-				SHOW::gotoxy(x, y, "è¯¥è¿›ç¨‹ä¸ºè¿è¡ŒçŠ¶æ€ï¼Œå·²ç»ç»“æŸã€‚");
+				SHOW::gotoxy(x, y, "¸Ã½ø³ÌÒÑÊÍ·Å¡£");
+				y += 2;
+				SHOW::gotoxy(x, y, "¸Ã½ø³ÌÎªÔËĞĞ×´Ì¬£¬ÒÑ¾­½áÊø¡£");
 				y += 2;
 				if (ready.empty()) {
-					SHOW::gotoxy(x, y, "å°±ç»ªé˜Ÿåˆ—å·²ç©ºï¼Œæ²¡æœ‰è¿›ç¨‹æ­£åœ¨æ‰§è¡Œã€‚");
+					SHOW::gotoxy(x, y, "¾ÍĞ÷¶ÓÁĞÒÑ¿Õ£¬Ã»ÓĞ½ø³ÌÕıÔÚÖ´ĞĞ¡£");
 					run = NULL;
 				}
-				else {//å°†å°±ç»ªé˜Ÿåˆ—ç¬¬ä¸€ä¸ªå˜ä¸ºè¿è¡ŒçŠ¶æ€
+				else {//½«¾ÍĞ÷¶ÓÁĞµÚÒ»¸ö±äÎªÔËĞĞ×´Ì¬
 					run = ready[0];
 					run->setNext(NULL);
 					run->setState(RUN);
 					vector<PCB*>::iterator it = ready.begin();
 					ready.erase(it);
-					SHOW::gotoxy(x, y, run->getName() + " æ­£åœ¨æ‰§è¡Œã€‚");
+					SHOW::gotoxy(x, y, run->getName() + " ÕıÔÚÖ´ĞĞ¡£");
 				}
 			}
 			else if (readyState == READY) {
 				deletePCB(ready, processName);
-				SHOW::gotoxy(x, y, "è¯¥è¿›ç¨‹ä¸ºå°±ç»ªçŠ¶æ€ï¼Œå·²ç»ç»“æŸã€‚");
+				SHOW::gotoxy(x, y, "¸Ã½ø³ÌÎª¾ÍĞ÷×´Ì¬£¬ÒÑ¾­½áÊø¡£");
 			}
 			else if (stopState == STOP) {
 				deletePCB(stop, processName);
-				SHOW::gotoxy(x, y, "è¯¥è¿›ç¨‹ä¸ºé˜»å¡çŠ¶æ€ï¼Œå·²ç»ç»“æŸã€‚");
+				SHOW::gotoxy(x, y, "¸Ã½ø³ÌÎª×èÈû×´Ì¬£¬ÒÑ¾­½áÊø¡£");
 			}
-			else SHOW::gotoxy(x, y, "æ²¡æœ‰è¯¥è¿›ç¨‹");
+			else SHOW::gotoxy(x, y, "Ã»ÓĞ¸Ã½ø³Ì");
 			y += 2;
 			SHOW::gotoxy(x, y, "");
 			system("pause");
 			goto refreash;
 		}
-		else if (input == "5") {//æ˜¾ç¤º
+		else if (input == "5") {//ÏÔÊ¾
 			short x = 25, y = 4;
-			int count = 0;
-			fresh(0,0,3000);
-			SHOW::gotoxy(x, y++, "æ‰€æœ‰è¿›ç¨‹");
-			SHOW::gotoxy(x, y++, "-------------------------------------------------------");
-			SHOW::gotoxy(x, y++, "åºå·\tè¿›ç¨‹åç§°\tä¼˜å…ˆçº§\tè¿è¡Œæ—¶é—´\tè¿è¡ŒçŠ¶æ€");
-			SHOW::gotoxy(x, y++, "-------------------------------------------------------");
-			if (run) {
-				count++;
-				SHOW::gotoxy(x, y++, run->toString(count));
-			}
-			for (int i = 0; i < ready.size(); i++, y++) {
-				count++;
-				SHOW::gotoxy(x, y, ready[i]->toString(count));
-				pageUp(count, x, y);
-			}
-			for (int i = 0; i < stop.size(); i++, y++) {
-				count++;
-				SHOW::gotoxy(x, y, stop[i]->toString(count));
-				pageUp(count, x, y);
-			}
-			SHOW::gotoxy(x, y++, "-------------------------------------------------------");
-			SHOW::gotoxy(x, y + 1, "");
-			system("pause");
+			fresh(0, 0, 3000);
+			string title = (manageState == 1) ? "ËùÓĞ½ø³Ì\tÓÅÏÈ¼¶µ÷¶È×´Ì¬" : "ËùÓĞ½ø³Ì\tÊ±¼äÆ¬µ÷¶È×´Ì¬";
+			processShow(title, x, y, [](short& x, short& y,string title) {
+				int count = 0;
+				if (run) {
+					count++;
+					SHOW::gotoxy(x, y++, run->toString(count));
+				}
+				for (unsigned int i = 0; i < ready.size(); i++, y++) {
+					count++;
+					SHOW::gotoxy(x, y, ready[i]->toString(count));
+					pageUp(count, x, y, title);
+				}
+				for (unsigned int i = 0; i < stop.size(); i++, y++) {
+					count++;
+					SHOW::gotoxy(x, y, stop[i]->toString(count));
+					pageUp(count, x, y,title);
+				}
+				});
 			goto refreash;
 		}
-		else{
+		else if (input == "6") {//µ÷¶È
+			short x = 25, y = 4;
+			fresh(0, 0, 3000);
+			if (ready.empty()) {
+				SHOW::gotoxy(25, 6, "ÎŞ¾ÍĞ÷½ø³ÌÎŞ·¨µ÷¶È");
+				SHOW::gotoxy(25, 8, "");
+				system("pause");
+				goto refreash;
+			}
+			string inputManage = menuManage(x, y);
+			y += 2;
+			while (1) {
+				if (inputManage == "0")
+					break;
+				else if (inputManage == "1") {//ÓÅÏÈ¼¶µ÷¶È
+					fresh(0, 0, 3000);
+					string title = (manageState == 1) ? "µ÷¶ÈË³Ğò\tÓÅÏÈ¼¶µ÷¶È×´Ì¬" : "µ÷¶ÈË³Ğò\tÊ±¼äÆ¬µ÷¶È×´Ì¬";
+					processShow(title,x, y, [](short& x, short& y,string title) {
+						int count = 0;
+						sort(ready.begin(), ready.end(), [](PCB* a,PCB* b) {
+							return a->getPriority() > b->getPriority();
+							});
+						connectReady();
+						if (!run && ready.size() >= 1) ready[0]->putRun(ready);
+						while (run) {
+							count++;
+							SHOW::gotoxy(x, y++, run->toString(count));
+							delete run;
+							if (!ready.empty()) ready[0]->putRun(ready);
+							else run = NULL;
+							pageUp(count, x, y, title);
+						}
+						});
+					manageState = 1;
+					break;
+				}
+				else if (inputManage == "2") {//Ê±¼äÆ¬µ÷¶È
+					fresh(0, 0, 3000);
+					SHOW::gotoxy(x, y, "ÇëÊäÈëÃ¿»Ø´¦ÀíµÄÊ±¼äÆ¬³¤¶È£º");
+					cin >> length;
+					fresh(0, 0, 3000);
+					string title = (manageState == 1) ? "µ÷¶ÈË³Ğò\tÓÅÏÈ¼¶µ÷¶È×´Ì¬" : "µ÷¶ÈË³Ğò\tÊ±¼äÆ¬µ÷¶È×´Ì¬";
+					processShow(title,x, y, [](short& x, short& y,string title) {
+						int count = 0;
+						if (!run && ready.size() >= 1) ready[0]->putRun(ready);
+						while (run) {
+							count++;
+							SHOW::gotoxy(x, y++, run->toString(count));
+							int size = run->getRunTime() - length;
+							run->setRunTime(size);
+							if (run->getRunTime() <= 0) delete run;
+							else run->putReady(ready, stop);
+							if (!ready.empty()) ready[0]->putRun(ready);
+							else run = NULL;
+							pageUp(count, x, y, title);
+						}
+						});
+					break;
+				}
+				else {
+					fresh(0, 0, 3000);
+					inputManage = menuManage(x, y);
+				}
+			}
+			goto refreash;
+		}
+		else if (input == "7") {//¶¯Ì¬·ÖÇø
+			short x = 25, y = 4;
+			fresh(0, 0, 3000);
+			string inputDp = menuDp(x, y);
+			while (1) {
+				if (inputDp == "0")
+					break;
+				else if (inputDp == "1")
+					break;
+				else if (inputDp == "2")
+					break;
+				else if (inputDp == "3")
+					break;
+				else {
+					fresh(0, 0, 3000);
+					inputDp = menuDp(x, y);
+				}
+			}
+			goto refreash;
+		}
+		else {
 			error.gotoxy();
 			SHOW::gotoxy(30, 23, "");
 			system("pause");
-			refreash:fresh(0, 0, 3000);
-			input=menu();
+		refreash:fresh(0, 0, 3000);
+			if (manageState == 1 && ready.size() >= 1) {
+				sort(ready.begin(), ready.end(), [](PCB* a, PCB* b) {
+					return a->getPriority() > b->getPriority();
+					});
+				connectReady();
+				ready[0]->putRun(ready);
+			}
+			input = menu();
 		}
 	}
 	return 0;

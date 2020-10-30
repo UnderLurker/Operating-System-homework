@@ -13,40 +13,39 @@ void SHOW::gotoxy() {
 	cout << dialog;
 }
 PCB::PCB(string processName, int priority, int runTime, int state, PCB* next) {
-	//runTimeå•ä½ä¸ºs
+	//runTimeµ¥Î»Îªs
 	this->processName = processName;
 	this->priority = priority;
 	this->runTime = runTime;
 	this->state = state;
 	this->next = next;
 	if (state == READY) {
-		this->runState = "å°±ç»ª";
+		this->runState = "¾ÍĞ÷";
 	}
 	else if (state == RUN) {
-		this->runState = "è¿è¡Œ";
+		this->runState = "ÔËĞĞ";
 	}
 	else if (state == STOP) {
-		this->runState = "é˜»å¡";
+		this->runState = "×èÈû";
 	}
 }
 PCB::~PCB() {
-	SHOW::gotoxy(25, 10, "è¿›ç¨‹å·²ç»é‡Šæ”¾.");
 }
 void PCB::setState(int state) {
 	this->state = state;
 	if (state == READY) {
-		this->runState = "å°±ç»ª";
+		this->runState = "¾ÍĞ÷";
 	}
 	else if (state == RUN) {
-		this->runState = "è¿è¡Œ";
+		this->runState = "ÔËĞĞ";
 	}
 	else if (state == STOP) {
-		this->runState = "é˜»å¡";
+		this->runState = "×èÈû";
 	}
 }
-bool PCB::putReady(vector<PCB*>& ready, vector<PCB*>& stop) {//falseä¸ºé˜Ÿåˆ—å·²æ»¡
+bool PCB::putReady(vector<PCB*>& ready, vector<PCB*>& stop) {//falseÎª¶ÓÁĞÒÑÂú
 	this->state = READY;
-	this->runState = "å°±ç»ª";
+	this->runState = "¾ÍĞ÷";
 	if (ready.size() == 0) ready.push_back(this);
 	else if (ready.size() == 10 || lookForward(ready) || lookForward(stop)) return false;
 	else {
@@ -76,9 +75,9 @@ bool PCB::stopToReady(vector<PCB*>& stop, vector<PCB*>& ready) {
 	}
 	return false;
 }
-int PCB::putStop(vector<PCB*>& ready, vector<PCB*>& stop, int former) {//æ”¾å…¥é˜»å¡é˜Ÿåˆ— 0 é˜Ÿåˆ—å·²æ»¡
+int PCB::putStop(vector<PCB*>& ready, vector<PCB*>& stop, int former) {//·ÅÈë×èÈû¶ÓÁĞ 0 ¶ÓÁĞÒÑÂú
 	this->state = STOP;
-	this->runState = "é˜»å¡";
+	this->runState = "×èÈû";
 	if (stop.size() == 10) return 0;
 	if (former == READY) {
 		int i = 0;
@@ -110,7 +109,7 @@ int PCB::putStop(vector<PCB*>& ready, vector<PCB*>& stop, int former) {//æ”¾å…¥é
 	}
 	return STOP;
 }
-bool PCB::deletePCB(vector<PCB*>& s) {//ä»å‘é‡sä¸­åˆ é™¤PCB
+bool PCB::deletePCB(vector<PCB*>& s) {//´ÓÏòÁ¿sÖĞÉ¾³ıPCB
 	if (s.empty()) return false;
 	int i;
 	vector<PCB*>::iterator it = s.begin();
@@ -128,7 +127,7 @@ bool PCB::deletePCB(vector<PCB*>& s) {//ä»å‘é‡sä¸­åˆ é™¤PCB
 	}
 	return false;
 }
-bool PCB::putRun(vector<PCB*>& s) {//å°†å·²æœ‰çš„è¿›ç¨‹æ”¾å…¥è¿è¡ŒçŠ¶æ€
+bool PCB::putRun(vector<PCB*>& s) {//½«ÒÑÓĞµÄ½ø³Ì·ÅÈëÔËĞĞ×´Ì¬
 	if (s.empty()) return false;
 	int i;
 	vector<PCB*>::iterator it = s.begin();
@@ -142,14 +141,15 @@ bool PCB::putRun(vector<PCB*>& s) {//å°†å·²æœ‰çš„è¿›ç¨‹æ”¾å…¥è¿è¡ŒçŠ¶æ€
 				s[i - 1]->next = NULL;
 			run = s[i];
 			run->state = RUN;
-			run->runState = "è¿è¡Œ";
+			run->runState = "ÔËĞĞ";
+			run->next = NULL;
 			s.erase(it);
 			return true;
 		}
 	}
 	return false;
 }
-bool PCB::lookForward(vector<PCB*>& s) {//çœ‹æ˜¯å¦æœ‰this
+bool PCB::lookForward(vector<PCB*>& s) {//¿´ÊÇ·ñÓĞthis
 	if (s.empty()) return false;
 	PCB* temp = s.front();
 	while (temp != NULL) {
@@ -164,6 +164,19 @@ string PCB::getName() {
 }
 int PCB::getState() {
 	return this->state;
+}
+int PCB::getRunTime()
+{
+	return this->runTime;
+}
+int PCB::getPriority(){
+	return this->priority;
+}
+void PCB::setPriority(int size){
+	this->priority = size;
+}
+void PCB::setRunTime(int size){
+	this->runTime = size;
 }
 string PCB::toString(int count) {
 	string ans, s;

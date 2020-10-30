@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef _DEPEND_
+#define _DEPEND_
+
 #include<iostream>
 #include<string>
 #include<vector>
@@ -15,7 +19,7 @@ using namespace std;
 #define STOP 3//阻塞
 
 class PCB;
-extern PCB* run = NULL;
+PCB* run = NULL;
 //bool isRun = false;
 class SHOW {
 private:
@@ -38,7 +42,7 @@ public:
 class PCB {
 private:
 	string processName;
-	int priority;		//优先级
+	int priority;		//优先级		数大的优先级高
 	int runTime;		//运行时间
 	int state;			//状态
 	string runState;
@@ -72,7 +76,18 @@ public:
 	}
 	string getName();
 	int getState();
+	int getRunTime();
+	int getPriority();
+	void setPriority(int size);
+	void setRunTime(int size);
 	string toString(int count=0);
 	PCB* getNext();
 	void setNext(PCB* s);
+	//friend PCB operator-(PCB& obj, int a);
 };
+
+//PCB operator-(PCB& obj, int a) {
+//	obj.runTime -= a;
+//	return obj;
+//}
+#endif // !_DEPEND_
