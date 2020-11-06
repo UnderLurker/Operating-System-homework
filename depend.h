@@ -7,16 +7,19 @@
 #include<string>
 #include<vector>
 #include<queue>
-#include<cstdlib>
 #include<Windows.h>
 #include<algorithm>
 #include<sstream>
+#include<list>
+#include<cstdlib>
 using namespace std;
 
 
 #define READY 1//就绪
 #define RUN 2//运行
 #define STOP 3//阻塞
+#define DISTRIBUTION_MAX 200	//可分配空间最大值
+#define START_ADDRESS 60		//起始地址
 
 class PCB;
 PCB* run = NULL;
@@ -90,4 +93,27 @@ public:
 //	obj.runTime -= a;
 //	return obj;
 //}
+
+class TASK {//作业
+public:
+	string name;
+	int length;
+	int startAddress;
+	TASK(string name, int length);
+	TASK(string name, int length, int startAddress);
+	~TASK();
+	bool putlist(list<TASK>& distribution,list<TASK>& unDistribution);//true 为不能插入队尾
+	void erase(list<TASK>::iterator& it, list<TASK>& distribution, list<TASK>& unDistribution);
+	string toString();
+};
+
+string itos(int value, int Radix) {
+	string s;
+	char temp[10] = "";
+#pragma warning(disable : 4996)
+	itoa(value, temp, 10);
+#pragma warning(default : 4996)
+	s = temp;
+	return s;
+}
 #endif // !_DEPEND_

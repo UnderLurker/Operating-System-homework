@@ -2,10 +2,15 @@
 
 #include"depend.h"
 
+list<TASK> distribution;//已分配区
+list<TASK> unDistribution;//未分配区
 vector<PCB*> ready;
 vector<PCB*> stop;
 int length;//每回处理的时间片长度
 int manageState = 1;//进程调度状态
+//int startAddress = START_ADDRESS;
+//int distributionMax = DISTRIBUTION_MAX;
+
 
 void connectReady() {//连接ready内的next
 	unsigned int i;
@@ -87,18 +92,18 @@ string menuDp(short x, short y) {
 	return ans;
 }
 
-void processShow(string title,short& x, short& y, void (*p)(short& x,short& y,string title)) {//打表
+void processShow(string title, short& x, short& y, void (*p)(short& x, short& y, string title)) {//打表
 	SHOW::gotoxy(x, y++, title);
 	SHOW::gotoxy(x, y++, "-------------------------------------------------------");
 	SHOW::gotoxy(x, y++, "序号\t进程名称\t优先级\t运行时间\t运行状态");
 	SHOW::gotoxy(x, y++, "-------------------------------------------------------");
-	p(x,y,title);
+	p(x, y, title);
 	SHOW::gotoxy(x, y++, "-------------------------------------------------------");
 	SHOW::gotoxy(x, y, "");
 	system("pause");
 }
 
-void pageUp(int& count, short& x, short& y,string title) {
+void processPageUp(int& count, short& x, short& y, string title) {
 	if (count == 10) {
 		count %= 10;
 		y++;
@@ -114,9 +119,37 @@ void pageUp(int& count, short& x, short& y,string title) {
 	}
 }
 
+void distributionPageUp(int& count, short& x, short& y, string title) {
+	if (count == 10) {
+		count %= 10;
+		y++;
+		SHOW::gotoxy(x, y++, "-----------------------------\t\t\t----------------------------");
+		SHOW::gotoxy(x, y + 1, "");
+		system("pause");
+		x = 25, y = 4;
+		fresh(0, 0, 3000);
+		SHOW::gotoxy(x, y++, title);
+		SHOW::gotoxy(x, y++, "-----------------------------\t\t\t----------------------------");
+		SHOW::gotoxy(x, y++, "序号\t始址\t长度\t状态\t\t\t作业名\t始址\t长度\t状态");
+		SHOW::gotoxy(x, y++, "-----------------------------\t\t\t----------------------------");
+	}
+}
+
+void distributionShow(string title, short& x, short& y, void (*p)(short& x, short& y, string title)) {
+	SHOW::gotoxy(x, y++, title);
+	SHOW::gotoxy(x, y++, "-----------------------------\t\t\t----------------------------");
+	SHOW::gotoxy(x, y++, "序号\t始址\t长度\t状态\t\t\t作业名\t始址\t长度\t状态");
+	SHOW::gotoxy(x, y++, "-----------------------------\t\t\t----------------------------");
+	p(x, y, title);
+	SHOW::gotoxy(x, y++, "-----------------------------\t\t\t----------------------------");
+	SHOW::gotoxy(x, y, "");
+	system("pause");
+}
+
 int main() {
 	string input = menu();
 	SHOW error(30, 21, "输入错误，请重新输入..");
+	unDistribution.push_back(TASK("剩余空间", DISTRIBUTION_MAX, START_ADDRESS));
 	while (1) {
 		if (input == "0")
 			return 0;
@@ -284,7 +317,7 @@ int main() {
 			short x = 25, y = 4;
 			fresh(0, 0, 3000);
 			string title = (manageState == 1) ? "所有进程\t优先级调度状态" : "所有进程\t时间片调度状态";
-			processShow(title, x, y, [](short& x, short& y,string title) {
+			processShow(title, x, y, [](short& x, short& y, string title) {
 				int count = 0;
 				if (run) {
 					count++;
@@ -293,12 +326,12 @@ int main() {
 				for (unsigned int i = 0; i < ready.size(); i++, y++) {
 					count++;
 					SHOW::gotoxy(x, y, ready[i]->toString(count));
-					pageUp(count, x, y, title);
+					processPageUp(count, x, y, title);
 				}
 				for (unsigned int i = 0; i < stop.size(); i++, y++) {
 					count++;
 					SHOW::gotoxy(x, y, stop[i]->toString(count));
-					pageUp(count, x, y,title);
+					processPageUp(count, x, y, title);
 				}
 				});
 			goto refreash;
@@ -320,9 +353,9 @@ int main() {
 				else if (inputManage == "1") {//优先级调度
 					fresh(0, 0, 3000);
 					string title = (manageState == 1) ? "调度顺序\t优先级调度状态" : "调度顺序\t时间片调度状态";
-					processShow(title,x, y, [](short& x, short& y,string title) {
+					processShow(title, x, y, [](short& x, short& y, string title) {
 						int count = 0;
-						sort(ready.begin(), ready.end(), [](PCB* a,PCB* b) {
+						sort(ready.begin(), ready.end(), [](PCB* a, PCB* b) {
 							return a->getPriority() > b->getPriority();
 							});
 						connectReady();
@@ -333,7 +366,7 @@ int main() {
 							delete run;
 							if (!ready.empty()) ready[0]->putRun(ready);
 							else run = NULL;
-							pageUp(count, x, y, title);
+							processPageUp(count, x, y, title);
 						}
 						});
 					manageState = 1;
@@ -345,7 +378,7 @@ int main() {
 					cin >> length;
 					fresh(0, 0, 3000);
 					string title = (manageState == 1) ? "调度顺序\t优先级调度状态" : "调度顺序\t时间片调度状态";
-					processShow(title,x, y, [](short& x, short& y,string title) {
+					processShow(title, x, y, [](short& x, short& y, string title) {
 						int count = 0;
 						if (!run && ready.size() >= 1) ready[0]->putRun(ready);
 						while (run) {
@@ -357,7 +390,7 @@ int main() {
 							else run->putReady(ready, stop);
 							if (!ready.empty()) ready[0]->putRun(ready);
 							else run = NULL;
-							pageUp(count, x, y, title);
+							processPageUp(count, x, y, title);
 						}
 						});
 					break;
@@ -376,14 +409,88 @@ int main() {
 			while (1) {
 				if (inputDp == "0")
 					break;
-				else if (inputDp == "1")
-					break;
-				else if (inputDp == "2")
-					break;
-				else if (inputDp == "3")
-					break;
-				else {
+				else if (inputDp == "1") {//分配
+					short x = 25, y = 4;
+					string taskName;
+					int taskLength;
+					bool isVic = false;//是否能够成功插入队尾
 					fresh(0, 0, 3000);
+					SHOW::gotoxy(x, y, "作业名：");
+					cin >> taskName;
+					y += 2;
+					SHOW::gotoxy(x, y, "作业长度：");
+					cin >> taskLength;
+					y += 2;
+					isVic = TASK(taskName, taskLength).putlist(distribution, unDistribution);//地址有问题
+					if (isVic) {
+						SHOW::gotoxy(x, y, "剩余空间不足或作业名重复，请回收作业后再试。");
+						y += 2;
+						SHOW::gotoxy(x, y, "");
+						system("pause");
+					}
+					else {
+						SHOW::gotoxy(x, y++, "创建成功。。。");
+						y++;
+						SHOW::gotoxy(x, y, "");
+						system("pause");
+					}
+					goto distri;
+				}
+				else if (inputDp == "2") {//回收
+					short x = 25, y = 4;
+					fresh(0, 0, 3000);
+					string taskName;
+					SHOW::gotoxy(x, y++, "回收的作业名称：");
+					y++;
+					cin >> taskName;
+					for (list<TASK>::iterator it = distribution.begin(); it != distribution.end(); it++) {
+						if ((*it).name == taskName) {
+							(*it).erase(it, distribution, unDistribution);
+							SHOW::gotoxy(x, y, "回收成功。。。");
+							y += 2;
+							SHOW::gotoxy(x, y, "");
+							system("pause");
+							goto distri;
+						}
+					}
+					SHOW::gotoxy(x, y, "没有该作业...");
+					y += 2;
+					SHOW::gotoxy(x, y, "");
+					system("pause");
+					goto distri;
+				}
+				else if (inputDp == "3") {//显示
+					short x = 15, y = 4;
+					fresh(0, 0, 3000);
+					distributionShow("未分配区说明表\t\t\t\t\t已分配区说明表", x, y, [](short& x, short& y, string title) {
+						//显示表的数据部分
+						int count = 0;
+						list<TASK>::iterator it1 = distribution.begin(), it2 = unDistribution.begin();
+						for (; it1 != distribution.end() || it2 != unDistribution.end(); ) {
+							count++;
+							string s, s1, s2;
+							if (it1 == distribution.end())
+								s2 = "";
+							else if (it2 == unDistribution.end())
+								s1 = "\t\t\t";
+							if (it1 != distribution.end()) {
+								s2 = (*it1).toString();
+								it1++;
+							}
+							if (it2 != unDistribution.end()) {
+								s1 = itos(count, 10) + "\t" + itos((*it2).startAddress, 10) + "\t" + itos((*it2).length, 10) + "\t1";
+								it2++;
+							}
+							if (s1 == "\t\t\t") s1 += "\t";
+							s = s1 + "\t\t\t" + s2;
+							SHOW::gotoxy(x, y++, s);
+							distributionPageUp(count, x, y, "未分配区说明表\t\t\t\t\t已分配区说明表");
+						}
+						});
+					goto distri;
+				}
+				else {
+				distri:fresh(0, 0, 3000);
 					inputDp = menuDp(x, y);
 				}
 			}

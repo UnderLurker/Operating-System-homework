@@ -202,3 +202,72 @@ PCB* PCB::getNext() {
 void PCB::setNext(PCB* s) {
 	this->next = s;
 }
+TASK::TASK(string name, int length) {
+	this->name = name;
+	this->length = length;
+}
+TASK::TASK(string name, int length,int startAddress) {
+	this->name = name;
+	this->length = length;
+	this->startAddress = startAddress;
+}
+
+TASK::~TASK(){
+}
+
+bool TASK::putlist(list<TASK>& distribution, list<TASK>& unDistribution){
+	for (list<TASK>::iterator it = distribution.begin(); it != distribution.end(); it++)
+		if ((*it).name == this->name)
+			return true;
+	for (list<TASK>::iterator it = unDistribution.begin(); it != unDistribution.end(); it++) {
+		if (this->length <= (*it).length) {
+			this->startAddress = (*it).startAddress;
+			for (list<TASK>::iterator it1 = distribution.begin(); it1 != distribution.end(); it1++) {
+				if ((*it1).startAddress >= this->startAddress+this->length) {
+					distribution.insert(it1, *this);
+					(*it).length -= this->length;
+					if ((*it).length == 0) unDistribution.erase(it);
+					(*it).startAddress += this->length;
+					return false;
+				}
+			}
+			distribution.push_back(*this);
+			(*it).length -= this->length;
+			(*it).startAddress += this->length;
+			if ((*it).length == 0) unDistribution.erase(it);
+			return false;
+		}
+	}
+	return true;
+}
+
+void TASK::erase(list<TASK>::iterator& it, list<TASK>& distribution, list<TASK>& unDistribution){
+	for (list<TASK>::iterator i = unDistribution.begin(); i != unDistribution.end(); i++) {
+		if ((this->length + this->startAddress) == (*i).startAddress) {
+			(*i).length += (*it).length;
+			(*i).startAddress -= (*it).length;
+			if ((*i).length == 0) unDistribution.erase(i);
+			distribution.erase(it);
+			return;
+		}
+		if ((*i).startAddress > this->startAddress) {
+			unDistribution.insert(i, *this);
+			distribution.erase(it);
+			return;
+		}
+	}
+	if (unDistribution.empty()||(this->startAddress != unDistribution.back().startAddress+unDistribution.back().length)) {
+		unDistribution.push_back(*this);
+		distribution.erase(it);
+	}
+	else {
+		unDistribution.back().length += this->length;
+		distribution.erase(it);
+	}
+}
+
+string TASK::toString(){
+	string ans = name + "\t" + itos(startAddress, 10) + "\t" + itos(length, 10) + "\t1";
+	return ans;
+}
+
